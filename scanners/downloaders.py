@@ -14,7 +14,7 @@ def anonymous_download(url, dest=None, proxy=None):
             "https": f"http://{proxy['proxyHost']}:{proxy['proxyPort']}",
             "http": f"http://{proxy['proxyHost']}:{proxy['proxyPort']}",
         }
-    resp = requests.get(url, allow_redirects=True, proxies=proxy)
+    resp = requests.get(url, allow_redirects=True, proxies=proxy, verify=False)
     if resp.status_code >= 400:
         logging.warning(f"Download {url} failed with {resp.status_code}.")
         return False
@@ -37,6 +37,7 @@ def oauth2_get_token_from_rtoken(auth, proxy=None, session=None):
 
     if session is None:
         session = requests.Session()
+        session.verify = False
 
     headers = {
         "Accept": "application/json",
@@ -80,6 +81,7 @@ def authenticated_download_with_rtoken(url, dest, auth, proxy=None):
     """Given a URL and Oauth2 authentication parameters, download the URL and store it at `dest`"""
 
     session = requests.Session()
+    session.verify = False
 
     # get a token
     token = oauth2_get_token_from_rtoken(auth, proxy, session)
